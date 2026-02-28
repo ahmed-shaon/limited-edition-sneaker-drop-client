@@ -42,7 +42,7 @@ const DashboardPage = () => {
       socket.off('stock:updated', handleStockUpdate);
       socket.off('feed:updated', handleFeedUpdate);
     };
-  }, []);
+  }, [drops]);
 
   const fetchDrops = async () => {
     try {
