@@ -3,6 +3,7 @@ import socket from '../socket/socket';
 import api from '../api/axios';
 import { useAuth } from './authContext';
 import { ReservationContext } from './ReservationContext';
+import toast from 'react-hot-toast';
 
 export const ReservationProvider = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -23,6 +24,10 @@ export const ReservationProvider = ({ children }) => {
     const handleExpiry = ({ dropId }) => {
       if (reservation?.dropId === dropId) {
         setReservation(null);
+        toast.error('Your reservation has expired. The item has been returned to stock.', {
+          duration: 5000,
+          icon: '⏰',
+        });
       }
     };
 

@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { useReservation } from '../context/ReservationContext';
 import Navbar from '../components/Navbar.jsx';
 import ReservationBanner from '../components/ReservationBanner';
+import toast from 'react-hot-toast';
 
 const CheckoutPage = () => {
   const { reservation, cancelReservation, clearReservation } = useReservation();
@@ -53,6 +54,9 @@ const CheckoutPage = () => {
       const res = await api.post('/purchases', { dropId: reservation.dropId });
       setPurchaseSuccess(res.data.data);
       clearReservation();
+      toast.success('Purchase completed! You got them! 🎉', {
+        duration: 5000,
+      });
     } catch (err) {
       setError(err.response?.data?.message || 'Purchase failed. Please try again.');
     } finally {
@@ -117,7 +121,7 @@ const CheckoutPage = () => {
           </div>
 
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/')}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition"
           >
             Back to Drops
@@ -222,7 +226,7 @@ const CheckoutPage = () => {
 
           {isExpired && (
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               className="w-full bg-transparent hover:bg-zinc-900 border border-zinc-700 text-zinc-400 hover:text-white font-medium py-3 rounded-xl transition text-sm"
             >
               Back to Drops
