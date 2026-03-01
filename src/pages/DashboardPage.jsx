@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import api from '../api/axios';
-import socket from '../socket/socket';
-import Navbar from '../components/Navbar';
-import ReservationBanner from '../components/ReservationBanner';
-import DropCard from '../components/DropCard';
+import api from '../api/axios.js';
+import socket from '../socket/socket.js';
+import Navbar from '../components/Navbar.jsx';
+import ReservationBanner from '../components/ReservationBanner.jsx';
+import DropCard from '../components/DropCard.jsx';
 
 const DashboardPage = () => {
   const [drops, setDrops] = useState([]);

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
-import Navbar from '../components/Navbar';
-import ReservationBanner from '../components/ReservationBanner';
+import api from '../api/axios.js';
+import Navbar from '../components/Navbar.jsx';
+import ReservationBanner from '../components/ReservationBanner.jsx';
 import toast from 'react-hot-toast';
-import { useReservation } from '../context/ReservationContext';
+import { useReservation } from '../context/reservationContext.js';
 
 const CheckoutPage = () => {
   const { reservation, cancelReservation, clearReservation } = useReservation();

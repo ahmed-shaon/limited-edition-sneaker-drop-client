@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { useAuth } from '../context/authContext';
-import { useReservation } from '../context/ReservationContext';
+import { useAuth } from '../context/authContext.js';
+import { useReservation } from '../context/reservationContext.js';
 
 const DropCard = ({ drop, onReserveSuccess }) => {
   const { isAuthenticated } = useAuth();

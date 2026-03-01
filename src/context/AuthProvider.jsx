@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import api from '../api/axios';
-import socket from '../socket/socket';
-import { AuthContext } from './authContext';
+import api from '../api/axios.js';
+import socket from '../socket/socket.js';
+import { AuthContext } from './authContext.js';
 
 
 export const AuthProvider = ({ children }) => {

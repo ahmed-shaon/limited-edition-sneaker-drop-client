@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import ProtectedRoute from "./components/ProtectedRoute";
-import DashboardPage from "./pages/DashboardPage";
-import { AuthProvider } from "./context/AuthProvider";
-import { ReservationProvider } from "./context/ReservationProvider";
-import CheckoutPage from "./pages/CheckoutPage";
+import LoginPage from "./pages/LoginPage.jsx";
+import RegisterPage from "./pages/RegisterPage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import DashboardPage from "./pages/DashboardPage.jsx";
+import { AuthProvider } from "./context/AuthProvider.jsx";
+import { ReservationProvider } from "./context/ReservationProvider.jsx";
+import CheckoutPage from "./pages/CheckoutPage.jsx";
 import { Toaster } from "react-hot-toast";
 
 

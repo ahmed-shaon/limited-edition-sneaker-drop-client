@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
-import { useReservation } from '../context/ReservationContext';
+import { useAuth } from '../context/authContext.js';
+import { useReservation } from '../context/reservationContext.js';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useReservation } from '../context/ReservationContext';
+import { useReservation } from '../context/reservationContext.js';
 
 const ReservationBanner = () => {
   const { reservation } = useReservation();

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import socket from '../socket/socket';
-import api from '../api/axios';
-import { useAuth } from './authContext';
-import { ReservationContext } from './ReservationContext';
+import socket from '../socket/socket.js';
+import api from '../api/axios.js';
+import { useAuth } from './authContext.js';
+import { ReservationContext } from './reservationContext.js';
 import toast from 'react-hot-toast';
 
 export const ReservationProvider = ({ children }) => {
