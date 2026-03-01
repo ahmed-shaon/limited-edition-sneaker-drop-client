@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useReservation } from '../context/ReservationContext';
-import Navbar from '../components/Navbar.jsx';
+import Navbar from '../components/Navbar';
 import ReservationBanner from '../components/ReservationBanner';
 import toast from 'react-hot-toast';
 
