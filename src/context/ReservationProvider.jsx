@@ -21,13 +21,21 @@ export const ReservationProvider = ({ children }) => {
 
   // Listen for reservation expiry from socket
   useEffect(() => {
-    const handleExpiry = ({ dropId }) => {
+    const handleExpiry = ({ dropId, reason }) => {
       if (reservation?.dropId === dropId) {
         setReservation(null);
-        toast.error('Your reservation has expired. The item has been returned to stock.', {
-          duration: 5000,
-          icon: '⏰',
-        });
+
+        if (reason === 'DROP_ENDED') {
+          toast.error('The drop has ended. Your reservation has been cancelled.', {
+            duration: 5000,
+            icon: '🏁',
+          });
+        } else {
+          toast.error('Your reservation has expired. The item has been returned to stock.', {
+            duration: 5000,
+            icon: '⏰',
+          });
+        }
       }
     };
 
@@ -39,7 +47,7 @@ export const ReservationProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await api.get('/reservations/active');
-      setReservation(res.data.data); // null if no active reservation
+      setReservation(res.data.data);
     } catch (error) {
       console.error('Failed to fetch active reservation:', error);
     } finally {
@@ -49,13 +57,17 @@ export const ReservationProvider = ({ children }) => {
 
   const makeReservation = async (dropId) => {
     const res = await api.post('/reservations', { dropId });
-    await fetchActiveReservation(); // refresh reservation state
+    await fetchActiveReservation();
     return res.data;
   };
 
   const cancelReservation = async (dropId) => {
     await api.delete(`/reservations/${dropId}`);
     setReservation(null);
+    toast.success('Reservation cancelled successfully.', {
+      duration: 4000,
+      icon: '🗑️',
+    });
   };
 
   const clearReservation = () => setReservation(null);

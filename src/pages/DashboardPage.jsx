@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import api from '../api/axios.js';
+import toast from 'react-hot-toast';
+import api from '../api/axios';
 import socket from '../socket/socket';
 import Navbar from '../components/Navbar';
 import ReservationBanner from '../components/ReservationBanner';
@@ -10,12 +11,10 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Fetch active drops on mount
   useEffect(() => {
     fetchDrops();
   }, []);
 
-  // Socket listeners for live updates
   useEffect(() => {
     // Live stock update — update availableStock for the matching drop
     const handleStockUpdate = ({ dropId, availableStock }) => {
@@ -35,14 +34,42 @@ const DashboardPage = () => {
       );
     };
 
+    // Drop activated — prepend to the top of the list
+    const handleDropActivated = (drop) => {
+      setDrops((prev) => {
+        // Avoid duplicates in case of race condition
+        const exists = prev.some((d) => d.id === drop.id);
+        if (exists) return prev;
+        return [drop, ...prev];
+      });
+      toast.success(`New drop is live: ${drop.name}`, {
+        duration: 5000,
+        icon: '🔥',
+      });
+    };
+
+    // Drop ended — remove from list and notify user
+    const handleDropEnded = ({ dropId }) => {
+      setDrops((prev) => prev.filter((drop) => drop.id !== dropId));
+      toast('A drop has ended.', {
+        duration: 4000,
+        icon: '🏁',
+        style: { background: '#18181b', color: '#fff', border: '1px solid #3f3f46' },
+      });
+    };
+
     socket.on('stock:updated', handleStockUpdate);
     socket.on('feed:updated', handleFeedUpdate);
+    socket.on('drop:activated', handleDropActivated);
+    socket.on('drop:ended', handleDropEnded);
 
     return () => {
       socket.off('stock:updated', handleStockUpdate);
       socket.off('feed:updated', handleFeedUpdate);
+      socket.off('drop:activated', handleDropActivated);
+      socket.off('drop:ended', handleDropEnded);
     };
-  }, [drops]);
+  }, []);
 
   const fetchDrops = async () => {
     try {
@@ -51,7 +78,7 @@ const DashboardPage = () => {
       const res = await api.get('/drops');
       setDrops(res.data.data);
     } catch (err) {
-      console.log(err);
+      console.log('Error fetching drops:', err);
       setError('Failed to load drops. Please refresh the page.');
     } finally {
       setLoading(false);
@@ -74,7 +101,7 @@ const DashboardPage = () => {
           </p>
         </div>
 
-        {/* Loading */}
+        {/* Loading skeleton */}
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(4)].map((_, i) => (
@@ -117,10 +144,7 @@ const DashboardPage = () => {
         {!loading && !error && drops.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {drops.map((drop) => (
-              <DropCard
-                key={drop.id}
-                drop={drop}
-              />
+              <DropCard key={drop.id} drop={drop} />
             ))}
           </div>
         )}

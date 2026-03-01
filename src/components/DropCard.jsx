@@ -1,7 +1,8 @@
-import { useNavigate } from 'react-router-dom';
-import { useReservation } from '../context/ReservationContext';
-import { useAuth } from '../context/authContext';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/authContext';
+import { useReservation } from '../context/ReservationContext';
 
 const DropCard = ({ drop, onReserveSuccess }) => {
   const { isAuthenticated } = useAuth();
@@ -9,7 +10,6 @@ const DropCard = ({ drop, onReserveSuccess }) => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const isOutOfStock = drop.availableStock === 0;
   const isCurrentlyReserved = reservation?.dropId === drop.id;
@@ -22,14 +22,29 @@ const DropCard = ({ drop, onReserveSuccess }) => {
     }
 
     setLoading(true);
-    setError('');
 
     try {
       await makeReservation(drop.id);
       onReserveSuccess?.();
       navigate('/checkout');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to reserve. Please try again.');
+      const message = err.response?.data?.message || '';
+
+      if (err.response?.status === 409 && message.toLowerCase().includes('stock')) {
+        toast.error('Sorry, this item just sold out!', {
+          duration: 4000,
+          icon: '😢',
+        });
+      } else if (message.includes('active reservation')) {
+        toast.error(message, {
+          duration: 4000,
+          icon: '⚠️',
+        });
+      } else {
+        toast.error(message || 'Failed to reserve. Please try again.', {
+          duration: 4000,
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -94,11 +109,6 @@ const DropCard = ({ drop, onReserveSuccess }) => {
               ))}
             </div>
           </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <p className="text-red-400 text-xs mt-3">{error}</p>
         )}
 
         {/* Reserve button */}
