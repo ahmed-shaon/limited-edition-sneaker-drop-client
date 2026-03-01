@@ -1,96 +1,155 @@
+# 👟 Sneaker Drop — Frontend
 
-# Limited Edition Sneaker Drop Client
+React frontend for the Limited Edition Sneaker Drop system. Displays live inventory, handles reservations with a 60-second countdown, and updates all connected clients in real-time via Socket.io.
 
-A modern, real-time web application for reserving and purchasing limited edition sneakers. Built with React, Vite, Tailwind CSS, and Socket.IO, this project provides a seamless user experience for high-demand sneaker drops.
-
-## Features
-
-- **User Authentication**: Register and log in securely.
-- **Live Sneaker Drops**: View available drops and real-time stock updates.
-- **Reservation System**: Reserve sneakers for a limited time with live countdowns.
-- **Checkout Flow**: Complete purchases or cancel reservations.
-- **Real-Time Updates**: Socket.IO integration for instant stock and feed changes.
-- **Responsive UI**: Styled with Tailwind CSS for a modern look.
-- **Notifications**: Toast notifications for actions and errors.
+---
 
 ## Tech Stack
 
-- [React](https://react.dev/)
-- [Vite](https://vitejs.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Socket.IO Client](https://socket.io/)
-- [Axios](https://axios-http.com/)
-- [React Router](https://reactrouter.com/)
-- [react-hot-toast](https://react-hot-toast.com/)
+| Layer | Technology |
+|---|---|
+| Framework | React (Vite) |
+| Styling | Tailwind CSS |
+| HTTP Client | Axios |
+| Real-time | Socket.io Client |
+| Routing | React Router DOM |
+| Notifications | react-hot-toast |
 
-## Folder Structure
+---
+
+## Project Structure
 
 ```
-├── public/
+client/
 ├── src/
-│   ├── api/                # Axios instance
-│   ├── components/         # UI components (Navbar, DropCard, etc.)
-│   ├── context/            # Auth and Reservation providers/contexts
-│   ├── pages/              # Page components (Dashboard, Login, etc.)
-│   ├── socket/             # Socket.IO client setup
-│   ├── App.jsx             # Main app component
-│   ├── main.jsx            # Entry point
-│   └── index.css           # Tailwind CSS import
-├── package.json
-├── vite.config.js
-└── README.md
+│   ├── api/
+│   │   └── axios.js               # Axios instance with JWT interceptor
+│   ├── context/
+│   │   ├── AuthContext.js         # Auth context + useAuth hook
+│   │   ├── AuthProvider.jsx       # Auth provider component
+│   │   ├── ReservationContext.js  # Reservation context + useReservation hook
+│   │   └── ReservationProvider.jsx
+│   ├── components/
+│   │   ├── Navbar.jsx             # Top navigation bar
+│   │   ├── DropCard.jsx           # Individual drop card with reserve button
+│   │   ├── ProtectedRoute.jsx     # Auth guard for protected pages
+│   │   └── ReservationBanner.jsx  # Persistent countdown banner
+│   ├── pages/
+│   │   ├── LoginPage.jsx
+│   │   ├── RegisterPage.jsx
+│   │   ├── DashboardPage.jsx      # Main live drops feed
+│   │   └── CheckoutPage.jsx       # Complete purchase page
+│   ├── socket/
+│   │   └── socket.js              # Socket.io client singleton
+│   ├── App.jsx                    # Routes setup
+│   └── main.jsx
+├── .env.example
+└── package.json
 ```
+
+---
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v18+ recommended)
-- npm or yarn
 
-### Installation
-1. **Clone the repository:**
-	```sh
-	git clone <repo-url>
-	cd limited-edition-sneaker-drop-client
-	```
-2. **Install dependencies:**
-	```sh
-	npm install
-	# or
-	yarn install
-	```
-3. **Set up environment variables:**
-	- Create a `.env` file in the root with:
-	  ```env
-	  VITE_API_URL=http://localhost:8000/api
-	  VITE_SOCKET_URL=http://localhost:8000
-	  ```
-	- Adjust URLs as needed for your backend.
+- Node.js v18+
+- npm
+- Backend server running at `http://localhost:8000`
 
-4. **Run the development server:**
-	```sh
-	npm run dev
-	# or
-	yarn dev
-	```
+---
 
-5. **Open the app:**
-	Visit [http://localhost:5173](http://localhost:5173) in your browser.
+### 1. Install Dependencies
 
-## Scripts
-- `npm run dev` — Start development server
-- `npm run build` — Build for production
-- `npm run preview` — Preview production build
-- `npm run lint` — Lint the codebase
+```bash
+cd client
+npm install
+```
 
-## Environment Variables
-- `VITE_API_URL` — Backend API base URL
-- `VITE_SOCKET_URL` — Socket.IO server URL
+---
 
-## Notes
-- This project uses **JavaScript** (not TypeScript).
-- Make sure your backend supports the required endpoints and Socket.IO events.
-- For UI customization, edit Tailwind config and component styles.
+### 2. Environment Variables
 
-## License
-MIT
+Create a `.env` file in the `client` directory:
+
+```env
+VITE_API_URL=http://localhost:8000/api
+VITE_SOCKET_URL=http://localhost:8000
+```
+
+---
+
+### 3. Start the Frontend
+
+```bash
+npm run dev
+```
+
+Frontend runs at `http://localhost:5173`
+
+---
+
+## Pages
+
+### Dashboard `/dashboard` — Public
+- Displays all active drops in a responsive grid
+- Live stock count updates instantly via `stock:updated` socket event
+- New drops appear automatically via `drop:activated` socket event
+- Ended drops disappear automatically via `drop:ended` socket event
+- Top 3 recent purchasers shown on each card, updates via `feed:updated`
+- Unauthenticated users can view but must log in to reserve
+
+### Login `/login` — Public
+- Email + password login
+- Redirects to dashboard on success
+
+### Register `/register` — Public
+- Username + email + password registration
+- Returns JWT token immediately — no separate login needed
+
+### Checkout `/checkout` — Protected
+- Shows reserved drop details
+- Live 60-second countdown timer
+- Turns red and urgent under 15 seconds
+- Complete Purchase button
+- Cancel Reservation button
+- Shows order confirmation on successful purchase
+- Redirects to dashboard if no active reservation
+
+---
+
+## Toast Notifications
+
+| Trigger | Toast |
+|---|---|
+| New drop goes live | 🔥 "New drop is live: {name}" |
+| Drop ends | 🏁 "A drop has ended" |
+| Reservation expires (timer) | ⏰ "Your reservation has expired" |
+| Reservation cancelled (drop ended) | 🏁 "The drop has ended. Your reservation has been cancelled" |
+| Reservation cancelled manually | 🗑️ "Reservation cancelled successfully" |
+| Purchase completed | 👟 "Purchase completed! You got them!" |
+| Item out of stock on reserve | 😢 "Sorry, this item just sold out!" |
+
+---
+
+## Socket Events (Client-side)
+
+| Event | Handler Location | Action |
+|---|---|---|
+| `drop:activated` | `DashboardPage` | Prepend new drop to list |
+| `drop:ended` | `DashboardPage` | Remove drop from list |
+| `stock:updated` | `DashboardPage` | Update `availableStock` on matching card |
+| `feed:updated` | `DashboardPage` | Update `recentPurchasers` on matching card |
+| `reservation:expired` | `ReservationContext` | Clear reservation state + show toast |
+
+---
+
+## Route Protection
+
+| Route | Access |
+|---|---|
+| `/dashboard` | Public — anyone can view drops |
+| `/login` | Public |
+| `/register` | Public |
+| `/checkout` | Protected — requires login |
+| Reserve button | Requires login — redirects to `/login` if not authenticated |
